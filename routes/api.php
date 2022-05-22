@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\TagController;
+use App\Http\Controllers\Api\PetController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,4 +31,13 @@ Route::controller(TagController::class)->group(function(){
     Route::post('/tag', 'createTag');
     Route::put('/tag/{id}', 'updateTag');
     Route::delete('/tag/{id}', 'deleteTag');
+});
+
+Route::controller(PetController::class)->group(function(){
+    Route::post('/pet', 'createPet');
+    Route::put('/pet', 'updatePet');
+    Route::get('/pet/findByStatus', 'searchStatus');
+    Route::get('/pet/{id}', 'searchPet');
+    // Route::post('/pet/{id}', 'updatePet');
+    Route::delete('/pet/{id}', 'deletePet');
 });
