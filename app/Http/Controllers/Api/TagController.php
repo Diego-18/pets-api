@@ -26,9 +26,43 @@ class TagController extends Controller
 
     public function searchTag(Request $request)
     {
-        $tag = Tag::where("id", $request->id)->get();
+        if($request->id > 0){
+            $tag = Tag::where("id", $request->id)->get();
 
-        if($tag->count() > 0){
+            if($tag->count() > 0){
+                return response()->json([
+                    "status" => 200,
+                    "data" => $tag
+                ]);
+            }
+
+            return response()->json([
+                "status" => 404
+            ]);
+        }
+
+        return response()->json([
+            "status" => 400
+        ]);
+    }
+
+    public function createTag(Request $request)
+    {
+        $validatedData = $request->validate([
+            "name" => "required"
+        ]);
+
+        if($validatedData){
+            $tag = new Tag();
+            $tag->name = $request->name;
+            $tag->save();
+
+            if(!$tag->save()){
+                return response()->json([
+                    "status" => 400
+                ]);
+            }
+
             return response()->json([
                 "status" => 200,
                 "data" => $tag
@@ -36,57 +70,58 @@ class TagController extends Controller
         }
 
         return response()->json([
-            "status" => 404
-        ]);
-    }
-
-    public function createTag(Request $request)
-    {
-        $tag = new Tag();
-        $tag->name = $request->name;
-        $tag->save();
-
-        if(!$tag->save()){
-            return response()->json([
-                "status" => 404
-            ]);
-        }
-
-        return response()->json([
-            "status" => 200,
-            "data" => $tag
+            "status" => 405
         ]);
     }
 
     public function updateTag(Request $request)
     {
-        $tag = Tag::findOrFail($request->id);
-        $tag->name = $request->name;
-        $tag->save();
+        if($request->id <= 0){
+            return response()->json([
+                "status" => 405
+            ]);
+        }
+        $validatedData = $request->validate([
+            "name" => "required"
+        ]);
 
-        if(!$tag->save()){
+        if($validatedData){
+            $tag = Tag::find($request->id);
+
+            if($tag != null){
+                $tag->name = $request->name;
+                $tag->save();
+
+                if($tag->save()){
+                    return response()->json([
+                        "status" => 200,
+                        "data" => $tag
+                    ]);
+                }
+            }
             return response()->json([
                 "status" => 404
             ]);
         }
-
-        return response()->json([
-            "status" => 200,
-            "data" => $tag
-        ]);
     }
 
     public function deleteTag(Request $request)
     {
-        $tag = Tag::destroy($request->id);
-        if(!$tag){
+        if($request->id > 0){
+            $tag = Tag::destroy($request->id);
+            if(!$tag){
+                return response()->json([
+                    "status" => 404
+                ]);
+            }
+
             return response()->json([
-                "status" => 404
+                "status" => 200
             ]);
         }
 
         return response()->json([
-            "status" => 200
+            "status" => 400
         ]);
     }
 }
