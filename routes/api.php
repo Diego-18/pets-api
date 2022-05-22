@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\TagController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,4 +22,12 @@ Route::controller(CategoryController::class)->group(function(){
     Route::post('/category', 'createCategory');
     Route::put('/category/{id}', 'updateCategory');
     Route::delete('/category/{id}', 'deleteCategory');
+});
+
+Route::controller(TagController::class)->group(function(){
+    Route::get('/tags', 'index');
+    Route::get('/tag/{id}', 'searchTag');
+    Route::post('/tag', 'createTag');
+    Route::put('/tag/{id}', 'updateTag');
+    Route::delete('/tag/{id}', 'deleteTag');
 });
