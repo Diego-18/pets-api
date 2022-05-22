@@ -26,9 +26,43 @@ class CategoryController extends Controller
 
     public function searchCategory(Request $request)
     {
-        $category = Category::where("id", $request->id)->get();
+        if($request->id > 0){
+            $category = Category::where("id", $request->id)->get();
 
-        if($category->count() > 0){
+            if($category->count() > 0){
+                return response()->json([
+                    "status" => 200,
+                    "data" => $category
+                ]);
+            }
+
+            return response()->json([
+                "status" => 404
+            ]);
+        }
+
+        return response()->json([
+            "status" => 400
+        ]);
+    }
+
+    public function createCategory(Request $request)
+    {
+        $validatedData = $request->validate([
+            "name" => "required"
+        ]);
+
+        if($validatedData){
+            $category = new Category();
+            $category->name = $request->name;
+            $category->save();
+
+            if(!$category->save()){
+                return response()->json([
+                    "status" => 400
+                ]);
+            }
+
             return response()->json([
                 "status" => 200,
                 "data" => $category
@@ -36,57 +70,57 @@ class CategoryController extends Controller
         }
 
         return response()->json([
-            "status" => 404
-        ]);
-    }
-
-    public function createCategory(Request $request)
-    {
-        $category = new Category();
-        $category->name = $request->name;
-        $category->save();
-
-        if(!$category->save()){
-            return response()->json([
-                "status" => 404
-            ]);
-        }
-
-        return response()->json([
-            "status" => 200,
-            "data" => $category
+            "status" => 405
         ]);
     }
 
     public function updateCategory(Request $request)
     {
-        $category = Category::findOrFail($request->id);
-        $category->name = $request->name;
-        $category->save();
+        $validatedData = $request->validate([
+            "name" => "required"
+        ]);
 
-        if(!$category->save()){
+        if($validatedData){
+            $category = Category::find($request->id);
+
+            if($category != null){
+                $category->name = $request->name;
+                $category->save();
+
+                if($category->save()){
+                    return response()->json([
+                        "status" => 200,
+                        "data" => $category
+                    ]);
+                }
+            }
             return response()->json([
                 "status" => 404
             ]);
         }
 
         return response()->json([
-            "status" => 200,
-            "data" => $category
+            "status" => 405
         ]);
     }
 
     public function deleteCategory(Request $request)
     {
-        $category = Category::destroy($request->id);
-        if(!$category){
+        if($request->id > 0){
+            $category = Category::destroy($request->id);
+            if(!$category){
+                return response()->json([
+                    "status" => 404
+                ]);
+            }
+
             return response()->json([
-                "status" => 404
+                "status" => 200
             ]);
         }
 
         return response()->json([
-            "status" => 200
+            "status" => 400
         ]);
     }
 }
