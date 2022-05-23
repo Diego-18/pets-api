@@ -11,11 +11,7 @@ class PetController extends Controller
     public function searchPet(Request $request)
     {
         if($request->id > 0){
-            $pet = Pet::join('category', 'pet.category_fk', '=', 'category.id')
-                ->join('tag', 'pet.tag_fk', '=', 'tag.id')
-                ->select('pet.*', 'category.name as category_name', 'tag.name as tag_name')
-                ->where("id", $request->id)
-                ->get();
+            $pet = Pet::find($request->id);
 
             if($pet){
                 return response()->json([
