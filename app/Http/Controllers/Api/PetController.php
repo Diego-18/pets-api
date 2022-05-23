@@ -11,7 +11,11 @@ class PetController extends Controller
     public function searchPet(Request $request)
     {
         if($request->id > 0){
-            $pet = Pet::find($request->id);
+            $pet = Pet::join('category', 'pet.category_fk', '=', 'category.id')
+                ->join('tag', 'pet.tag_fk', '=', 'tag.id')
+                ->select('pet.*', 'category.name as category_name', 'tag.name as tag_name')
+                ->where("id", $request->id)
+                ->get();
 
             if($pet){
                 return response()->json([
@@ -37,11 +41,18 @@ class PetController extends Controller
         ]);
 
         if($validatedData['status'] === "available" || $validatedData['status'] === "sold" || $validatedData['status'] === "pending"){
-            $pet = Pet::where("status", $validatedData['status'])->get();
+            $pet = Pet::join('category', 'pet.category_fk', '=', 'category.id')
+                ->join('tag', 'pet.tag_fk', '=', 'tag.id')
+                ->select('pet.*', 'category.name as category_name', 'tag.name as tag_name')
+                ->where("status", $validatedData['status'])
+                ->get();
+
+            if($pet){
                 return response()->json([
                     "status" => 200,
                     "data" => $pet
                 ]);
+            }
         }
         else{
             return response()->json([
