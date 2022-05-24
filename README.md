@@ -128,6 +128,13 @@ In order to manage the **technicians** we need to send you the following **param
 }
 ~~~
     
+### Search for Status
+~~~
+{
+    "status": "available"   (string - required) (Accept: available, pending, sold)
+}
+~~~
+    
 </details>
 </details>
     
