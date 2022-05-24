@@ -31,7 +31,7 @@ php artisan serve
 </details>
 
 ## Data Base
-The documentation of the creation of the database and diagrams of the same, can be found in the **database** directory of the same project.
+The documentation of the creation of the database and diagrams of the same, can be found in the [database](./database) directory of the same project.
 
 ## Functionality
 
