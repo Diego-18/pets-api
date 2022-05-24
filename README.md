@@ -41,6 +41,11 @@ To visualize the api operation it is necessary to use postman, thunder Client or
 
 ![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white)
 
+If you want to see a demo of the api you can do it by substituting the base url of each collection
+
+- Remote: https://pets.diegochavez-dc.com/api/
+- Local: http://localhost:8000/api/
+
 ## Collections
 
 <details>
