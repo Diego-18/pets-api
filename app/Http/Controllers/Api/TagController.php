@@ -5,31 +5,70 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Tag;
+use Symfony\Component\HttpFoundation\Response;
 
 class TagController extends Controller
 {
-    public function index()
+    public function index(): Response
     {
         $tags = Tag::all();
 
-        if($tags){
-            return response()->json([
-                "status" => 200,
-                "data" => $tags
-            ]);
-        }
-
         return response()->json([
-            "status" => 500
+            "status" => 200,
+            "data" => $tags
         ]);
     }
 
-    public function searchTag(Request $request)
+    public function searchTag(Request $request): Response
     {
-        if($request->id > 0){
-            $tag = Tag::where("id", $request->id)->get();
+        $tagId = $request->id;
 
-            if($tag->count() > 0){
+        if ($tagId > 0) {
+            $tag = Tag::find($tagId);
+
+            if ($tag) {
+                return response()->json([
+                    "status" => 200,
+                    "data" => $tag
+                ]);
+            }
+        }
+
+        return response()->json([
+            "status" => 404
+        ]);
+    }
+
+    public function createTag(Request $request): Response
+    {
+        $validatedData = $request->validate([
+            "name" => "required"
+        ]);
+
+        $tag = Tag::create([
+            "name" => $validatedData["name"]
+        ]);
+
+        return response()->json([
+            "status" => 200,
+            "data" => $tag
+        ]);
+    }
+
+    public function updateTag(Request $request): Response
+    {
+        $validatedData = $request->validate([
+            "name" => "required"
+        ]);
+
+        if ($validatedData) {
+            $tag = Tag::find($request->id);
+
+            if ($tag) {
+                $tag->update([
+                    'name' => $request->name,
+                ]);
+
                 return response()->json([
                     "status" => 200,
                     "data" => $tag
@@ -42,81 +81,25 @@ class TagController extends Controller
         }
 
         return response()->json([
-            "status" => 400
+            "status" => 404
         ]);
     }
 
-    public function createTag(Request $request)
+    public function deleteTag(Request $request): Response
     {
-        $validatedData = $request->validate([
-            "name" => "required"
-        ]);
+        $tagId = $request->id;
 
-        if($validatedData){
-            $tag = new Tag();
-            $tag->name = $request->name;
-            $tag->save();
+        if ($tagId > 0) {
+            $tag = Tag::destroy($tagId);
 
-            if(!$tag->save()){
+            if ($tag) {
                 return response()->json([
-                    "status" => 400
+                    "status" => 200
                 ]);
             }
 
-            return response()->json([
-                "status" => 200,
-                "data" => $tag
-            ]);
-        }
-
-        return response()->json([
-            "status" => 405
-        ]);
-    }
-
-    public function updateTag(Request $request)
-    {
-        if($request->id <= 0){
-            return response()->json([
-                "status" => 405
-            ]);
-        }
-        $validatedData = $request->validate([
-            "name" => "required"
-        ]);
-
-        if($validatedData){
-            $tag = Tag::find($request->id);
-
-            if($tag != null){
-                $tag->name = $request->name;
-                $tag->save();
-
-                if($tag->save()){
-                    return response()->json([
-                        "status" => 200,
-                        "data" => $tag
-                    ]);
-                }
-            }
             return response()->json([
                 "status" => 404
-            ]);
-        }
-    }
-
-    public function deleteTag(Request $request)
-    {
-        if($request->id > 0){
-            $tag = Tag::destroy($request->id);
-            if(!$tag){
-                return response()->json([
-                    "status" => 404
-                ]);
-            }
-
-            return response()->json([
-                "status" => 200
             ]);
         }
 

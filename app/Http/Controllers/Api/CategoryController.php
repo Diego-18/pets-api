@@ -5,31 +5,28 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Category;
+use Symfony\Component\HttpFoundation\Response;
 
 class CategoryController extends Controller
 {
-    public function index()
+    public function index(): Response
     {
         $categories = Category::all();
 
-        if($categories){
-            return response()->json([
-                "status" => 200,
-                "data" => $categories
-            ]);
-        }
-
         return response()->json([
-            "status" => 500
+            "status" => 200,
+            "data" => $categories
         ]);
     }
 
-    public function searchCategory(Request $request)
+    public function searchCategory(Request $request): Response
     {
-        if($request->id > 0){
-            $category = Category::where("id", $request->id)->get();
+        $categoryId = $request->id;
 
-            if($category->count() > 0){
+        if ($categoryId > 0) {
+            $category = Category::find($categoryId);
+
+            if ($category) {
                 return response()->json([
                     "status" => 200,
                     "data" => $category
@@ -46,22 +43,16 @@ class CategoryController extends Controller
         ]);
     }
 
-    public function createCategory(Request $request)
+    public function createCategory(Request $request): Response
     {
         $validatedData = $request->validate([
             "name" => "required"
         ]);
 
-        if($validatedData){
-            $category = new Category();
-            $category->name = $request->name;
-            $category->save();
-
-            if(!$category->save()){
-                return response()->json([
-                    "status" => 400
-                ]);
-            }
+        if ($validatedData) {
+            $category = Category::create([
+                'name' => $request->input('name')
+            ]);
 
             return response()->json([
                 "status" => 200,
@@ -74,26 +65,26 @@ class CategoryController extends Controller
         ]);
     }
 
-    public function updateCategory(Request $request)
+    public function updateCategory(Request $request): Response
     {
         $validatedData = $request->validate([
             "name" => "required"
         ]);
 
-        if($validatedData){
+        if ($validatedData) {
             $category = Category::find($request->id);
 
-            if($category != null){
-                $category->name = $request->name;
-                $category->save();
+            if ($category) {
+                $category->update([
+                    'name' => $request->name,
+                ]);
 
-                if($category->save()){
-                    return response()->json([
-                        "status" => 200,
-                        "data" => $category
-                    ]);
-                }
+                return response()->json([
+                    "status" => 200,
+                    "data" => $category
+                ]);
             }
+
             return response()->json([
                 "status" => 404
             ]);
@@ -104,18 +95,21 @@ class CategoryController extends Controller
         ]);
     }
 
-    public function deleteCategory(Request $request)
+    public function deleteCategory(Request $request): Response
     {
-        if($request->id > 0){
-            $category = Category::destroy($request->id);
-            if(!$category){
+        $categoryId = $request->id;
+
+        if ($categoryId > 0) {
+            $category = Category::destroy($categoryId);
+
+            if ($category) {
                 return response()->json([
-                    "status" => 404
+                    "status" => 200
                 ]);
             }
 
             return response()->json([
-                "status" => 200
+                "status" => 404
             ]);
         }
 

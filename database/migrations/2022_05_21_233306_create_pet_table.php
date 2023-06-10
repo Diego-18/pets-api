@@ -16,12 +16,10 @@ return new class extends Migration
         Schema::create('pet', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->unsignedBigInteger('category_fk');
-            $table->foreign('category_fk')
+            $table->foreignId('category_fk')
                 ->references("id")
                 ->on("category");
-            $table->unsignedBigInteger('tag_fk');
-            $table->foreign('tag_fk')
+            $table->foreignId('tag_fk')
                 ->references("id")
                 ->on("tag");
             $table->string('photoUrls');
